@@ -24,6 +24,10 @@ class CVAnalysisRequest(BaseModel):
     cv_text: str
     job_description: str
 
+class InterviewPrepRequest(BaseModel):
+    job_description: str
+    cv_text: str
+
 @app.get("/")
 def root():
     return {"message": "HireIQ AI Service running"}
@@ -60,6 +64,54 @@ Respond with exactly this JSON structure:
     "gaps": [<list of 3 skills or experiences the candidate is missing>],
     "summary": "<2 sentence honest assessment>"
 }}"""
+                }
+            ]
+        )
+
+        return {"result": response.choices[0].message.content}
+
+    except Exception as e:
+        print(f"ERROR: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/interview-prep")
+def interview_prep(request: InterviewPrepRequest):
+    try:
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a senior technical interviewer. Always respond with valid JSON only, no extra text."
+                },
+                {
+                    "role": "user",
+                    "content": f"""Generate interview questions for this candidate based on the job description.
+
+CV:
+{request.cv_text}
+
+Job Description:
+{request.job_description}
+
+Respond with exactly this JSON structure:
+{{
+    "technical_questions": [
+        {{
+            "question": "<question>",
+            "model_answer": "<what a good answer looks like>"
+        }}
+    ],
+    "behavioural_questions": [
+        {{
+            "question": "<question>",
+            "model_answer": "<what a good answer looks like>"
+        }}
+    ],
+    "questions_to_ask_interviewer": [<3 smart questions the candidate should ask>]
+}}
+
+Generate 3 technical and 3 behavioural questions."""
                 }
             ]
         )

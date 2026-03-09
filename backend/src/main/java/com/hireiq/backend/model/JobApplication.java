@@ -18,9 +18,12 @@ public class JobApplication {
     private String company;
     private String role;
     private String status; // APPLIED, INTERVIEW, OFFER, REJECTED
-
     private LocalDate appliedDate;
+
+    @Column(columnDefinition = "TEXT")
     private String jobDescription;
+
+    @Column(columnDefinition = "TEXT")
     private String notes;
 
     // match score returned by our AI service

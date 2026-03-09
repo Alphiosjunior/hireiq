@@ -1,0 +1,6 @@
+2026-03-09 06:48:52.338399+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLDataException: Value too long for column "JOB_DESCRIPTION CHARACTER VARYING(255)": "U&'Group, South Africa\\2019s leading online Retail and Delivery organisation, is... (4746)"; SQL statement:
+insert into job_applications (applied_date,company,job_description,match_score,notes,role,status,id) values (?,?,?,?,?,?,?,default) [22001-232]
+2026-03-09 07:02:53.926174+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLDataException: Value too long for column "JOB_DESCRIPTION CHARACTER VARYING(255)": "U&'Group, South Africa\\2019s leading online Retail and Delivery organisation, is... (4746)"; SQL statement:
+insert into job_applications (applied_date,company,job_description,match_score,notes,role,status,id) values (?,?,?,?,?,?,?,default) [22001-232]

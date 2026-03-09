@@ -23,7 +23,7 @@ function InterviewPrep({ cvText, setCvText, jobDescription, setJobDescription }:
   const [result, setResult] = useState<InterviewPrepResult | null>(null)
   const [loading, setLoading] = useState(false)
   const [expandedQuestion, setExpandedQuestion] = useState<string | null>(null)
-  
+
   const handleGenerate = async () => {
     if (!cvText || !jobDescription) return
     setLoading(true)
@@ -32,7 +32,8 @@ function InterviewPrep({ cvText, setCvText, jobDescription, setJobDescription }:
         cv_text: cvText,
         job_description: jobDescription,
       })
-      const parsed = JSON.parse(res.data.result)
+      const raw = res.data.result.replace(/```json|```/g, '').trim()
+      const parsed = JSON.parse(raw)
       setResult(parsed)
     } catch (err) {
       console.error(err)

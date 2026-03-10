@@ -12,6 +12,10 @@ interface Application {
   matchScore: number | null
 }
 
+interface ApplicationsProps {
+  cvText: string
+}
+
 const emptyForm = {
   company: '',
   role: '',
@@ -21,12 +25,18 @@ const emptyForm = {
   notes: '',
 }
 
-function Applications() {
-  const [applications, setApplications] = useState<Application[]>([])
-  const [form, setForm] = useState(emptyForm)
-  const [showForm, setShowForm] = useState(false)
-  const [loading, setLoading] = useState(false)
+interface ApplicationsProps {
+  cvText: string
+  form: typeof emptyForm
+  setForm: (form: typeof emptyForm) => void
+  showForm: boolean
+  setShowForm: (val: boolean) => void
+}
 
+function Applications({ cvText, form, setForm, showForm, setShowForm }: ApplicationsProps) {
+  const [applications, setApplications] = useState<Application[]>([])
+  const [loading, setLoading] = useState(false)
+  const [analyzing, setAnalyzing] = useState<number | null>(null)
   const fetchApplications = () => {
     axios.get('http://localhost:8081/api/applications')
       .then(res => setApplications(res.data))
@@ -55,6 +65,30 @@ function Applications() {
   const handleDelete = async (id: number) => {
     await axios.delete(`http://localhost:8081/api/applications/${id}`)
     fetchApplications()
+  }
+
+  const handleAnalyze = async (app: Application) => {
+    if (!app.jobDescription || !cvText) {
+      alert('Please paste your CV on the Dashboard page first, and make sure the application has a job description.')
+      return
+    }
+    setAnalyzing(app.id)
+    try {
+      const aiRes = await axios.post('http://localhost:8000/analyze-cv', {
+        cv_text: cvText,
+        job_description: app.jobDescription,
+      })
+      const parsed = JSON.parse(aiRes.data.result.replace(/```json|```/g, '').trim())
+      await axios.put(`http://localhost:8081/api/applications/${app.id}`, {
+        ...app,
+        matchScore: parsed.match_score,
+      })
+      fetchApplications()
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setAnalyzing(null)
+    }
   }
 
   return (
@@ -212,6 +246,13 @@ function Applications() {
                 }}>
                   {app.status}
                 </span>
+                <button
+                  onClick={() => handleAnalyze(app)}
+                  className="btn-ghost"
+                  style={{ fontSize: '12px', padding: '6px 12px', color: 'var(--accent)' }}
+                >
+                  {analyzing === app.id ? 'Analyzing...' : 'Analyze'}
+                </button>
                 <button
                   onClick={() => handleDelete(app.id)}
                   className="btn-ghost"

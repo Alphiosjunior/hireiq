@@ -9,6 +9,15 @@ function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>('dark')
   const [cvText, setCvText] = useState('')
   const [jobDescription, setJobDescription] = useState('')
+  const [appForm, setAppForm] = useState({
+    company: '',
+    role: '',
+    status: 'APPLIED',
+    appliedDate: '',
+    jobDescription: '',
+    notes: '',
+  })
+  const [showAppForm, setShowAppForm] = useState(false)
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
@@ -30,7 +39,15 @@ function App() {
             setJobDescription={setJobDescription}
           />
         } />
-        <Route path="/applications" element={<Applications />} />
+        <Route path="/applications" element={
+          <Applications
+            cvText={cvText}
+            form={appForm}
+            setForm={setAppForm}
+            showForm={showAppForm}
+            setShowForm={setShowAppForm}
+          />
+        } />
         <Route path="/interview-prep" element={
           <InterviewPrep
             cvText={cvText}

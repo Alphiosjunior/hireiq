@@ -1,6 +1,23 @@
-env
-venv/
-__pycache__/
-
+# Python
 ai-service/.env
 ai-service/venv/
+ai-service/__pycache__/
+ai-service/*.pyc
+
+# Java
+backend/target/
+backend/hireiqdb.mv.db
+backend/hireiqdb.trace.db
+backend/.mvn/
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.iml

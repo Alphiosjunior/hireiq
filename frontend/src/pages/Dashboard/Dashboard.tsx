@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 
@@ -13,6 +12,8 @@ interface Application {
 
 interface CVAnalysisResult {
   match_score: number
+  ats_keywords_found: string[]
+  ats_keywords_missing: string[]
   strengths: string[]
   gaps: string[]
   summary: string
@@ -29,7 +30,7 @@ function Dashboard({ cvText, setCvText, jobDescription, setJobDescription }: Das
   const [applications, setApplications] = useState<Application[]>([])
   const [analysisResult, setAnalysisResult] = useState<CVAnalysisResult | null>(null)
   const [analyzing, setAnalyzing] = useState(false)
-  
+
   useEffect(() => {
     axios.get('http://localhost:8081/api/applications')
       .then(res => setApplications(res.data))
@@ -44,7 +45,7 @@ function Dashboard({ cvText, setCvText, jobDescription, setJobDescription }: Das
         cv_text: cvText,
         job_description: jobDescription,
       })
-      const parsed = JSON.parse(res.data.result)
+      const parsed = JSON.parse(res.data.result.replace(/```json|```/g, '').trim())
       setAnalysisResult(parsed)
     } catch (err) {
       console.error(err)
@@ -102,7 +103,7 @@ function Dashboard({ cvText, setCvText, jobDescription, setJobDescription }: Das
           CV Analyzer
         </h2>
         <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '20px' }}>
-          Paste your CV and a job description to get an AI match score and gap analysis
+          Paste your CV and a job description to get an AI match score, ATS keyword analysis and gap analysis
         </p>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
@@ -175,6 +176,39 @@ function Dashboard({ cvText, setCvText, jobDescription, setJobDescription }: Das
                 <div style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
                   {analysisResult.summary}
                 </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+              <div style={{
+                padding: '16px',
+                borderRadius: '12px',
+                background: '#16a34a11',
+                border: '1px solid #16a34a33'
+              }}>
+                <div style={{ fontWeight: '600', color: '#16a34a', marginBottom: '10px' }}>
+                  ATS Keywords Found
+                </div>
+                {analysisResult.ats_keywords_found.map((k, i) => (
+                  <div key={i} style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '6px' }}>
+                    + {k}
+                  </div>
+                ))}
+              </div>
+              <div style={{
+                padding: '16px',
+                borderRadius: '12px',
+                background: '#dc262611',
+                border: '1px solid #dc262633'
+              }}>
+                <div style={{ fontWeight: '600', color: '#dc2626', marginBottom: '10px' }}>
+                  ATS Keywords Missing
+                </div>
+                {analysisResult.ats_keywords_missing.map((k, i) => (
+                  <div key={i} style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '6px' }}>
+                    - {k}
+                  </div>
+                ))}
               </div>
             </div>
 

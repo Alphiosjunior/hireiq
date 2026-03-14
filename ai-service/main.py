@@ -49,7 +49,8 @@ def analyze_cv(request: CVAnalysisRequest):
                 },
                 {
                     "role": "user",
-                    "content": f"""Review this CV against the job description.
+                    "content": f"""You are a technical recruiter and ATS specialist reviewing a candidate's CV against a job description.
+
 
 CV:
 {request.cv_text}
@@ -57,12 +58,16 @@ CV:
 Job Description:
 {request.job_description}
 
-Respond with exactly this JSON structure:
+Many companies use ATS software to filter CVs automatically before a human sees them. ATS systems scan for keywords and phrases from the job description. A CV that does not contain the right keywords will be rejected even if the candidate is qualified.
+
+Provide a JSON response with exactly this structure:
 {{
-    "match_score": <number between 0 and 100>,
+    "match_score": <number between 0 and 100 based on how well the CV would pass ATS filtering>,
+    "ats_keywords_found": [<list of 3 important keywords from the job description that appear in the CV>],
+    "ats_keywords_missing": [<list of 3 important keywords from the job description that are missing from the CV>],
     "strengths": [<list of 3 things the candidate does well>],
     "gaps": [<list of 3 skills or experiences the candidate is missing>],
-    "summary": "<2 sentence honest assessment>"
+    "summary": "<2 sentence honest assessment including ATS compatibility>"
 }}"""
                 }
             ]
